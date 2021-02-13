@@ -1,7 +1,10 @@
 package dev.bhavindesai.domain
 
+import androidx.room.Entity
+
+@Entity(tableName = "Location")
 data class Location (
-    val consolidatedWeather: List<ConsolidatedWeather>,
+    val consolidatedWeather: List<WeatherData>,
     val time: String,
     val sunRise: String,
     val sunSet: String,
@@ -9,7 +12,8 @@ data class Location (
     val woeid: Long,
 )
 
-data class ConsolidatedWeather (
+@Entity(tableName = "WeatherData")
+data class WeatherData (
     val id: Long,
     val weatherStateName: String,
     val weatherStateAbbr: String,
@@ -26,17 +30,3 @@ data class ConsolidatedWeather (
     val visibility: Double,
     val predictability: Long
 )
-
-//data class Parent (
-//    val title: String,
-//    val locationType: String,
-//    val woeid: Long,
-//    val lattLong: String
-//)
-//
-//data class Source (
-//    val title: String,
-//    val slug: String,
-//    val url: String,
-//    val crawlRate: Long
-//)
