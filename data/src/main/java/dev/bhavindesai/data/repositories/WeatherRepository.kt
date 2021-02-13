@@ -3,16 +3,17 @@ package dev.bhavindesai.data.repositories
 import dev.bhavindesai.data.local.WeatherDataDao
 import dev.bhavindesai.data.remote.WeatherService
 import dev.bhavindesai.data.sources.MultiDataSource
+import dev.bhavindesai.data.sources.RemoteDataSource
+import dev.bhavindesai.data.utils.InternetUtil
 import dev.bhavindesai.domain.local.Location
 import dev.bhavindesai.domain.local.LocationWeatherData
 import dev.bhavindesai.domain.local.Weather
 import dev.bhavindesai.domain.remote.LocationResponse
+import dev.bhavindesai.domain.remote.WeatherOfTheDayRequest
 import dev.bhavindesai.domain.remote.WeatherResponse
 import dev.bhavindesai.domain.remote.WhereOnEarth
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.*
 
 class WeatherRepository(
     private val weatherService: WeatherService,
@@ -29,6 +30,27 @@ class WeatherRepository(
                     flowOf(null)
                 }
             }
+
+    fun getWeatherOfCityForTheDay(woeId: Long, year: Int, month: Int, date: Int) : Flow<List<WeatherResponse>?> {
+        return if (InternetUtil.isInternetOn()) {
+            rdsWeatherOfTheDay.getRemoteData(WeatherOfTheDayRequest(woeId, year, month, date))
+        } else {
+            flowOf(null)
+        }
+    }
+
+    private val rdsWeatherOfTheDay = object : RemoteDataSource<WeatherOfTheDayRequest, List<WeatherResponse>> {
+        override fun getRemoteData(requestData: WeatherOfTheDayRequest) = flow {
+            emit(weatherService.getWeatherOfTheDay(
+                requestData.woeId,
+                requestData.year,
+                requestData.month,
+                requestData.date,
+            ))
+        }
+
+    }
+
 
     private val mdsWeather = object : MultiDataSource<LocationWeatherData, Long, LocationResponse>() {
         override fun mapper(remoteData: LocationResponse): LocationWeatherData {
