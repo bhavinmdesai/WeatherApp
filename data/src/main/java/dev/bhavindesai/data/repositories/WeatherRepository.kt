@@ -3,7 +3,6 @@ package dev.bhavindesai.data.repositories
 import dev.bhavindesai.data.local.WeatherDataDao
 import dev.bhavindesai.data.remote.WeatherService
 import dev.bhavindesai.data.sources.MultiDataSource
-import dev.bhavindesai.data.sources.RemoteDataSource
 import dev.bhavindesai.domain.local.Location
 import dev.bhavindesai.domain.local.LocationWeatherData
 import dev.bhavindesai.domain.local.Weather
@@ -13,7 +12,7 @@ import dev.bhavindesai.domain.remote.WhereOnEarth
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOf
 
 class WeatherRepository(
     private val weatherService: WeatherService,
@@ -22,15 +21,14 @@ class WeatherRepository(
 
     @FlowPreview
     fun getWeatherForCity(city: String) =
-        rdsWhereOnEarth.getRemoteData(city)
-            .map { it.first() }
-            .flatMapConcat { mdsWeather.fetch(it.woeid) }
-
-    private val rdsWhereOnEarth = object : RemoteDataSource<String, List<WhereOnEarth>> {
-        override fun getRemoteData(requestData: String) = flow {
-            emit(weatherService.getWhereOnEarth(requestData))
-        }
-    }
+        mdsWhereOnEarth.fetch(city)
+            .flatMapConcat {
+                if (it != null) {
+                    mdsWeather.fetch(it.woeid)
+                } else {
+                    flowOf(null)
+                }
+            }
 
     private val mdsWeather = object : MultiDataSource<LocationWeatherData, Long, LocationResponse>() {
         override fun mapper(remoteData: LocationResponse): LocationWeatherData {
@@ -49,6 +47,23 @@ class WeatherRepository(
 
         override fun getRemoteData(requestData: Long) = flow {
             emit(weatherService.getWeatherData(requestData))
+        }
+    }
+
+    private val mdsWhereOnEarth = object : MultiDataSource<WhereOnEarth?, String, List<WhereOnEarth>>() {
+        override fun mapper(remoteData: List<WhereOnEarth>): WhereOnEarth = remoteData.first()
+
+        override suspend fun getLocalData() = weatherDataDao.getWhereOnEarth()
+
+        override suspend fun storeLocalData(data: WhereOnEarth?) {
+            data?.let {
+                weatherDataDao.deleteAllWhereOnEarth()
+                weatherDataDao.storeWhereOnEarth(data)
+            }
+        }
+
+        override fun getRemoteData(requestData: String) = flow {
+            emit(weatherService.getWhereOnEarth(requestData))
         }
     }
 }
