@@ -35,7 +35,11 @@ class WeatherRepository(
             return remoteData.toLocationWeatherData()
         }
 
-        override suspend fun getLocalData(): LocationWeatherData = weatherDataDao.getLocation()
+        override suspend fun getLocalData(): LocationWeatherData {
+            return weatherDataDao.getLocation().apply {
+                weatherData = weatherData.sortedBy { it.applicable_date }
+            }
+        }
 
         override suspend fun storeLocalData(data: LocationWeatherData) {
             weatherDataDao.deleteAllLocations()
