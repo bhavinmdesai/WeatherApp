@@ -40,17 +40,27 @@ class WeatherDetailsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initChart()
+        binding.progressBar.visibility = View.VISIBLE
+        binding.chart.visibility = View.GONE
 
         val woeId = arguments?.getLong("woeId")
         val date = arguments?.getString("date")
+
+        binding.lblTitle.text = "Temperature chart of\n$date"
+
+        initChart()
 
         if (woeId!=null && date!=null) {
             viewModel
                 .fetchWeatherDetailsOfDay(woeId, date)
                 .observe(viewLifecycleOwner) {
-                    if (it != null)
+                    binding.progressBar.visibility = View.GONE
+                    if (it != null) {
                         setData(it)
+                    } else {
+                        binding.lblNoInternet.visibility = View.VISIBLE
+                        binding.lblTitle.visibility = View.GONE
+                    }
                 }
         }
     }
@@ -159,6 +169,8 @@ class WeatherDetailsFragment : BaseFragment() {
 
             // set data
             chart.data = data
+
+            chart.visibility = View.VISIBLE
 
             chart.invalidate()
         }
