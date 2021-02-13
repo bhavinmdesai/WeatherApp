@@ -4,12 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import androidx.navigation.fragment.findNavController
+import dev.bhavindesai.viewmodels.WeatherListViewModel
 import dev.bhavindesai.weatherapp.R
 import dev.bhavindesai.weatherapp.ui.base.BaseFragment
 
 class WeatherListFragment : BaseFragment() {
+
+    private val viewModel: WeatherListViewModel by lazyViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -17,5 +18,13 @@ class WeatherListFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.weather_list_fragment, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.weatherForecast.observe(viewLifecycleOwner) {
+            println(it)
+        }
     }
 }
