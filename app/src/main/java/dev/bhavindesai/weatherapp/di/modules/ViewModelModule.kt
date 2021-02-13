@@ -7,6 +7,7 @@ import dagger.Binds
 import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
+import dev.bhavindesai.viewmodels.WeatherDetailsViewModel
 import dev.bhavindesai.viewmodels.WeatherListViewModel
 import kotlin.reflect.KClass
 
@@ -22,4 +23,7 @@ abstract class ViewModelModule {
 
     @[Binds IntoMap ViewModelKey(WeatherListViewModel::class)]
     internal abstract fun bindWeatherListViewModel(viewModel: WeatherListViewModel): ViewModel
+
+    @[Binds IntoMap ViewModelKey(WeatherDetailsViewModel::class)]
+    internal abstract fun bindWeatherDetailsViewModel(viewModel: WeatherDetailsViewModel): ViewModel
 }
