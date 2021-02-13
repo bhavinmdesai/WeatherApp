@@ -1,4 +1,4 @@
-package dev.bhavindesai.domain
+package dev.bhavindesai.domain.remote
 
 data class WhereOnEarth (
     val title: String,
