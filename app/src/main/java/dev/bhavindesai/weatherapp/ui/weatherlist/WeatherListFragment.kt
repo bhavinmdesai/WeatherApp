@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import dev.bhavindesai.domain.local.Weather
 import dev.bhavindesai.viewmodels.WeatherListViewModel
 import dev.bhavindesai.weatherapp.databinding.WeatherListFragmentBinding
 import dev.bhavindesai.weatherapp.ui.base.BaseFragment
 import kotlinx.coroutines.FlowPreview
 
-class WeatherListFragment : BaseFragment() {
+class WeatherListFragment : BaseFragment(), WeatherListAdapter.OnItemClickListener {
 
     private val viewModel: WeatherListViewModel by lazyViewModel()
     private lateinit var binding: WeatherListFragmentBinding
@@ -33,11 +35,18 @@ class WeatherListFragment : BaseFragment() {
                 binding.groupUnsuccessfulResponse.visibility = View.GONE
 
                 binding.txtCityName.text = locationWeatherData.locationData.title
-                binding.rvWeatherList.adapter = WeatherListAdapter(locationWeatherData)
+                binding.rvWeatherList.adapter = WeatherListAdapter(locationWeatherData).apply {
+                    itemClickListener = this@WeatherListFragment
+                }
             } else {
                 binding.groupSuccessfulResponse.visibility = View.GONE
                 binding.groupUnsuccessfulResponse.visibility = View.VISIBLE
             }
         }
+    }
+
+    override fun onItemClick(weather: Weather) {
+        val direction = WeatherListFragmentDirections.goToDetailFragment(weather.woeid, weather.applicable_date)
+        findNavController().navigate(direction)
     }
 }

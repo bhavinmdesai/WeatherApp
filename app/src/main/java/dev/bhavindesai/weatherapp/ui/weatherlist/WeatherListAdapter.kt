@@ -11,15 +11,28 @@ class WeatherListAdapter(
     private val locationWeatherData: LocationWeatherData
 ) : RecyclerView.Adapter<WeatherListAdapter.WeatherListViewHolder>() {
 
-    class WeatherListViewHolder(private val binding: WeatherListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    var itemClickListener: OnItemClickListener? = null
+
+    interface OnItemClickListener {
+        fun onItemClick(weather: Weather)
+    }
+
+    class WeatherListViewHolder(
+        private val binding: WeatherListItemBinding,
+        private val itemClickListener: OnItemClickListener?
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(weather: Weather) {
+            binding.root.setOnClickListener { itemClickListener?.onItemClick(weather) }
             binding.weather = weather
             binding.executePendingBindings()
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherListViewHolder =
-        WeatherListViewHolder(WeatherListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        WeatherListViewHolder(
+            WeatherListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            itemClickListener
+        )
 
     override fun onBindViewHolder(holder: WeatherListViewHolder, position: Int) =
         holder.bind(locationWeatherData.weatherData[position])
