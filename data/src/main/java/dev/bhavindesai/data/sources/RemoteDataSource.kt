@@ -1,5 +1,7 @@
 package dev.bhavindesai.data.sources
 
+import kotlinx.coroutines.flow.Flow
+
 interface RemoteDataSource<RequestType, ResponseType> {
-    suspend fun getRemoteData(requestData: RequestType) : ResponseType?
+    fun getRemoteData(requestData: RequestType) : Flow<ResponseType?>
 }
