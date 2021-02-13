@@ -2,6 +2,7 @@ package dev.bhavindesai.weatherapp.di.modules
 
 import dagger.Module
 import dagger.Provides
+import dev.bhavindesai.data.local.WeatherDataDao
 import dev.bhavindesai.data.repositories.WeatherRepository
 import dev.bhavindesai.data.remote.WeatherService
 import javax.inject.Singleton
@@ -10,5 +11,8 @@ import javax.inject.Singleton
 class RepositoriesModule {
 
     @[Provides Singleton]
-    fun providesWeatherRepository(weatherService: WeatherService) = WeatherRepository(weatherService)
+    fun providesWeatherRepository(
+        weatherService: WeatherService,
+        weatherDataDao: WeatherDataDao
+    ) = WeatherRepository(weatherService, weatherDataDao)
 }
