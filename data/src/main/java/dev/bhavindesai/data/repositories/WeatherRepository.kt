@@ -1,30 +1,29 @@
-package dev.bhavindesai.data
+package dev.bhavindesai.data.repositories
 
 import dev.bhavindesai.data.remote.WeatherService
 import dev.bhavindesai.data.sources.MultiDataSource
 import dev.bhavindesai.data.sources.RemoteDataSource
 import dev.bhavindesai.domain.Location
 import dev.bhavindesai.domain.WhereOnEarth
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class WeatherRepository(
     private val weatherService: WeatherService
 ) {
 
-    suspend fun getWeatherForCity(city: String) : Flow<Location> {
-        val whereOnEarthList = getWhereOnEarthId(city)
-
-        return getWeatherForWoeId(whereOnEarthList.first().woeid)
-    }
-
-    private suspend fun getWhereOnEarthId(city: String) = rdsWhereOnEarth.getRemoteData(city)
-
-    private fun getWeatherForWoeId(woeId: Long) = mdsWeather.fetch(woeId)
+    @FlowPreview
+    fun getWeatherForCity(city: String) =
+        rdsWhereOnEarth.getRemoteData(city)
+            .map { it.first() }
+            .flatMapConcat { mdsWeather.fetch(it.woeid) }
 
     private val rdsWhereOnEarth = object : RemoteDataSource<String, List<WhereOnEarth>> {
-        override suspend fun getRemoteData(
-            requestData: String
-        ): List<WhereOnEarth> = weatherService.getWhereOnEarth(requestData)
+        override fun getRemoteData(requestData: String) = flow {
+            emit(weatherService.getWhereOnEarth(requestData))
+        }
     }
 
     private val mdsWeather = object : MultiDataSource<Location, Long, List<Location>>() {
@@ -40,7 +39,8 @@ class WeatherRepository(
             TODO("Not yet implemented")
         }
 
-        override suspend fun getRemoteData(requestData: Long): List<Location> =
-            weatherService.getWeatherData(requestData)
+        override fun getRemoteData(requestData: Long) = flow {
+            emit(weatherService.getWeatherData(requestData))
+        }
     }
 }
