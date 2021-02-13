@@ -1,6 +1,8 @@
 package dev.bhavindesai.data.sources
 
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 abstract class MultiDataSource<LocalType, RequestType, ResponseType>
     : LocalDataSource<LocalType>,
@@ -11,12 +13,14 @@ abstract class MultiDataSource<LocalType, RequestType, ResponseType>
     fun fetch(request: RequestType) = flow {
         emit(getLocalData())
 
-        val remoteData = getRemoteData(request)
-        remoteData?.let {
-            val localData = mapper(remoteData)
-            storeLocalData(localData)
+        getRemoteData(request)
+            .collect {
+                it?.let { remoteData ->
+                    val localData = mapper(remoteData)
+                    storeLocalData(localData)
 
-            emit(localData)
-        }
+                    emit(localData)
+                }
+            }
     }
 }
