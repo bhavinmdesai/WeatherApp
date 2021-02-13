@@ -12,7 +12,7 @@ data class LocationWeatherData(
         parentColumn = "woeid",
         entityColumn = "woeid"
     )
-    val weatherData: List<Weather>
+    var weatherData: List<Weather>
 )
 
 @Entity
