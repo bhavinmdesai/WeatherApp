@@ -8,11 +8,18 @@
         android:name="dev.bhavindesai.weatherapp.ui.weatherlist.WeatherListFragment"
         android:label="WeatherListFragment" >
         <action
-            android:id="@+id/action_weatherListFragment_to_weatherDetails"
-            app:destination="@id/weatherDetails" />
+            android:id="@+id/goToDetailFragment"
+            app:destination="@id/weatherDetailsFragment">
+            <argument
+                android:name="woeId"
+                app:argType="long" />
+            <argument
+                android:name="date"
+                app:argType="string" />
+        </action>
     </fragment>
     <fragment
-        android:id="@+id/weatherDetails"
-        android:name="dev.bhavindesai.weatherapp.ui.weatherdetails.WeatherDetails"
-        android:label="WeatherDetails" />
+        android:id="@+id/weatherDetailsFragment"
+        android:name="dev.bhavindesai.weatherapp.ui.weatherdetails.WeatherDetailsFragment"
+        android:label="WeatherDetailsFragment" />
 </navigation>
