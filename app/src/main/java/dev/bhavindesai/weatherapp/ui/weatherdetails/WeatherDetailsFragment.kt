@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import dev.bhavindesai.weatherapp.R
 import dev.bhavindesai.weatherapp.ui.base.BaseFragment
 
-class WeatherDetails : BaseFragment() {
+class WeatherDetailsFragment : BaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
