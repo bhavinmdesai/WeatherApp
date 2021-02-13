@@ -1,7 +1,8 @@
-package dev.bhavindesai.weatherapp.ui.activities
+package dev.bhavindesai.weatherapp.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.navigation.fragment.NavHostFragment
 import dev.bhavindesai.weatherapp.R
 
 class MainActivity : AppCompatActivity() {
