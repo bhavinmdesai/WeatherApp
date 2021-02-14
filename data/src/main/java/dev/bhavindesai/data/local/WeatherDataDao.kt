@@ -13,7 +13,7 @@ import dev.bhavindesai.domain.remote.WhereOnEarth
 interface WeatherDataDao {
 
     @Query("SELECT * FROM WhereOnEarth")
-    suspend fun getWhereOnEarth() : WhereOnEarth
+    suspend fun getWhereOnEarth(): WhereOnEarth?
 
     @Insert
     suspend fun storeWhereOnEarth(whereOnEarth: WhereOnEarth)
@@ -23,7 +23,7 @@ interface WeatherDataDao {
 
     @Transaction
     @Query("SELECT * FROM Location")
-    suspend fun getLocation() : LocationWeatherData
+    suspend fun getLocation(): LocationWeatherData?
 
     @Insert
     suspend fun storeLocation(location: Location)
