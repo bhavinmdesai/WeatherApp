@@ -5,8 +5,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-abstract class MultiDataSource<LocalType, RequestType, ResponseType>
-    : LocalDataSource<LocalType>,
+abstract class MultiDataSource<LocalType, RequestType, ResponseType>(
+    private val internetUtil: InternetUtil
+) : LocalDataSource<LocalType>,
     RemoteDataSource<RequestType, ResponseType> {
 
     abstract fun mapper(remoteData: ResponseType) : LocalType
@@ -16,7 +17,7 @@ abstract class MultiDataSource<LocalType, RequestType, ResponseType>
 
         localData?.let { emit(it) }
 
-        if (InternetUtil.isInternetOn()) {
+        if (internetUtil.isInternetOn()) {
             getRemoteData(request)
                 .collect {
                     it?.let { remoteData ->
