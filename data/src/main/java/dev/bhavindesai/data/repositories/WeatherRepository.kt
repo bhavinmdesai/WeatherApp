@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.*
 class WeatherRepository(
     private val weatherService: WeatherService,
     private val weatherDataDao: WeatherDataDao,
+    private val internetUtil: InternetUtil,
 ) {
 
     @FlowPreview
@@ -51,7 +52,7 @@ class WeatherRepository(
     }
 
 
-    private val mdsWeather = object : MultiDataSource<LocationWeatherData?, Long, LocationResponse>() {
+    private val mdsWeather = object : MultiDataSource<LocationWeatherData?, Long, LocationResponse>(internetUtil) {
         override fun mapper(remoteData: LocationResponse): LocationWeatherData {
             return remoteData.toLocationWeatherData()
         }
@@ -76,7 +77,7 @@ class WeatherRepository(
         }
     }
 
-    private val mdsWhereOnEarth = object : MultiDataSource<WhereOnEarth?, String, List<WhereOnEarth>>() {
+    private val mdsWhereOnEarth = object : MultiDataSource<WhereOnEarth?, String, List<WhereOnEarth>>(internetUtil) {
         override fun mapper(remoteData: List<WhereOnEarth>): WhereOnEarth = remoteData.first()
 
         override suspend fun getLocalData() = weatherDataDao.getWhereOnEarth()
