@@ -58,19 +58,5 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/groupSuccessfulResponse"
-            android:visibility="gone"
-            app:constraint_referenced_ids="txtCityName, rvWeatherList"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/groupUnsuccessfulResponse"
-            android:visibility="gone"
-            app:constraint_referenced_ids="lblNoInternet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
