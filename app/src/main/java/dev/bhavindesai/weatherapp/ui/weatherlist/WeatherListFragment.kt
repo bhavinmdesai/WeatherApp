@@ -30,6 +30,7 @@ class WeatherListFragment : BaseFragment(), WeatherListAdapter.OnItemClickListen
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.weatherForecast.observe(viewLifecycleOwner) { locationWeatherData ->
+            binding.progressBar.visibility = View.GONE
             if (locationWeatherData != null) {
                 binding.groupSuccessfulResponse.visibility = View.VISIBLE
                 binding.groupUnsuccessfulResponse.visibility = View.GONE
