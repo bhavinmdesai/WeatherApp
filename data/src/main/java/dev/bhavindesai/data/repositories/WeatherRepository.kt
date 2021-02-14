@@ -24,6 +24,7 @@ class WeatherRepository(
     @FlowPreview
     fun getWeatherForCity(city: String) =
         mdsWhereOnEarth.fetch(city)
+            .distinctUntilChanged()
             .flatMapConcat {
                 if (it != null) {
                     mdsWeather.fetch(it.woeid)
@@ -50,7 +51,6 @@ class WeatherRepository(
             ))
         }
     }
-
 
     private val mdsWeather = object : MultiDataSource<LocationWeatherData?, Long, LocationResponse>(internetUtil) {
         override fun mapper(remoteData: LocationResponse): LocationWeatherData {
