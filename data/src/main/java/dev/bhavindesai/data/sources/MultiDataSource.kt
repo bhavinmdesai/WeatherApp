@@ -12,18 +12,22 @@ abstract class MultiDataSource<LocalType, RequestType, ResponseType>
     abstract fun mapper(remoteData: ResponseType) : LocalType
 
     fun fetch(request: RequestType) = flow {
-        emit(getLocalData())
+        val localData = getLocalData()
+
+        localData?.let { emit(it) }
 
         if (InternetUtil.isInternetOn()) {
             getRemoteData(request)
                 .collect {
                     it?.let { remoteData ->
-                        val localData = mapper(remoteData)
-                        storeLocalData(localData)
+                        val mappedData = mapper(remoteData)
+                        storeLocalData(mappedData)
 
-                        emit(localData)
+                        emit(mappedData)
                     }
                 }
+        } else if (localData == null){
+            emit(null)
         }
     }
 }
