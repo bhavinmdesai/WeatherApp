@@ -1,7 +1,9 @@
 package dev.bhavindesai.weatherapp.di.modules
 
+import android.app.Application
 import dagger.Module
 import dagger.Provides
+import dev.bhavindesai.data.utils.InternetUtil
 import dev.bhavindesai.weatherapp.BuildConfig
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -10,6 +12,9 @@ import javax.inject.Singleton
 
 @Module
 class NetworkModule {
+
+    @[Provides Singleton]
+    fun providesInternetUtil(application: Application): InternetUtil = InternetUtil.apply { init(application) }
 
     @[Provides Singleton]
     fun providesGsonConverterFactory(): GsonConverterFactory = GsonConverterFactory.create()
