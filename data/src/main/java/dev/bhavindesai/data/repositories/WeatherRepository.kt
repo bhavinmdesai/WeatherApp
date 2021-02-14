@@ -48,27 +48,27 @@ class WeatherRepository(
                 requestData.date,
             ))
         }
-
     }
 
 
-    private val mdsWeather = object : MultiDataSource<LocationWeatherData, Long, LocationResponse>() {
+    private val mdsWeather = object : MultiDataSource<LocationWeatherData?, Long, LocationResponse>() {
         override fun mapper(remoteData: LocationResponse): LocationWeatherData {
             return remoteData.toLocationWeatherData()
         }
 
-        override suspend fun getLocalData(): LocationWeatherData {
-            return weatherDataDao.getLocation().apply {
+        override suspend fun getLocalData(): LocationWeatherData? =
+            weatherDataDao.getLocation()?.apply {
                 weatherData = weatherData.sortedBy { it.applicable_date }
             }
-        }
 
-        override suspend fun storeLocalData(data: LocationWeatherData) {
-            weatherDataDao.deleteAllLocations()
-            weatherDataDao.storeLocation(data.locationData)
+        override suspend fun storeLocalData(data: LocationWeatherData?) {
+            data?.let {
+                weatherDataDao.deleteAllLocations()
+                weatherDataDao.storeLocation(data.locationData)
 
-            weatherDataDao.deleteAllWeathers()
-            weatherDataDao.storeWeather(data.weatherData)
+                weatherDataDao.deleteAllWeathers()
+                weatherDataDao.storeWeather(data.weatherData)
+            }
         }
 
         override fun getRemoteData(requestData: Long) = flow {
