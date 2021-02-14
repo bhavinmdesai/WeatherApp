@@ -16,6 +16,13 @@ class WeatherListFragment : BaseFragment(), WeatherListAdapter.OnItemClickListen
     private val viewModel: WeatherListViewModel by lazyViewModel()
     private lateinit var binding: WeatherListFragmentBinding
 
+    @FlowPreview
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModel.fetchWeather()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -25,7 +32,6 @@ class WeatherListFragment : BaseFragment(), WeatherListAdapter.OnItemClickListen
         return binding.root
     }
 
-    @FlowPreview
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
