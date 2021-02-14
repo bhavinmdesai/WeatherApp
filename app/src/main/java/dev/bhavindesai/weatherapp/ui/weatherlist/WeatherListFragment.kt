@@ -35,19 +35,27 @@ class WeatherListFragment : BaseFragment(), WeatherListAdapter.OnItemClickListen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.weatherForecast.observe(viewLifecycleOwner) { locationWeatherData ->
-            binding.progressBar.visibility = View.GONE
-            if (locationWeatherData != null) {
-                binding.groupSuccessfulResponse.visibility = View.VISIBLE
-                binding.groupUnsuccessfulResponse.visibility = View.GONE
+        viewModel.showProgress.observe(viewLifecycleOwner) {
+            binding.progressBar.visibility = if (it) View.VISIBLE else View.GONE
+        }
 
-                binding.txtCityName.text = locationWeatherData.locationData.title
-                binding.rvWeatherList.adapter = WeatherListAdapter(locationWeatherData).apply {
+        viewModel.showWeatherList.observe(viewLifecycleOwner) {
+            binding.rvWeatherList.visibility = if (it) View.VISIBLE else View.GONE
+        }
+
+        viewModel.showNoInternet.observe(viewLifecycleOwner) {
+            binding.lblNoInternet.visibility = if (it) View.VISIBLE else View.GONE
+        }
+
+        viewModel.cityName.observe(viewLifecycleOwner) {
+            binding.txtCityName.text = it
+        }
+
+        viewModel.weatherForecast.observe(viewLifecycleOwner) {
+            it?.let {
+                binding.rvWeatherList.adapter = WeatherListAdapter(it).apply {
                     itemClickListener = this@WeatherListFragment
                 }
-            } else {
-                binding.groupSuccessfulResponse.visibility = View.GONE
-                binding.groupUnsuccessfulResponse.visibility = View.VISIBLE
             }
         }
     }
